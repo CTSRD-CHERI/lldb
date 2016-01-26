@@ -10,7 +10,6 @@
 #include "lldb/Core/DataExtractor.h"
 #include "lldb/Core/RegisterValue.h"
 #include "lldb/Target/Thread.h"
-#include "Plugins/Process/Utility/RegisterContextPOSIX.h"
 #include "RegisterContextPOSIXCore_mips64.h"
 
 using namespace lldb_private;
@@ -67,7 +66,7 @@ bool
 RegisterContextCorePOSIX_mips64::CauseBD()
 {
     uint32_t reg_num;
-    reg_num = ConvertRegisterKindToRegisterNumber (lldb::eRegisterKindDWARF, gcc_dwarf_cause_mips64);
+    reg_num = ConvertRegisterKindToRegisterNumber (lldb::eRegisterKindDWARF, dwarf_cause_mips64);
     const RegisterInfo *reg_info = GetRegisterInfoAtIndex (reg_num);
     RegisterValue reg_value;
     

@@ -3,8 +3,11 @@ Test some lldb command abbreviations to make sure the common short spellings of
 many commands remain available even after we add/delete commands in the future.
 """
 
+from __future__ import print_function
+
+import lldb_shared
+
 import os, time
-import unittest2
 import lldb
 from lldbtest import *
 import lldbutil
@@ -13,6 +16,7 @@ class CommonShortSpellingsTestCase(TestBase):
     
     mydir = TestBase.compute_mydir(__file__)
 
+    @no_debug_info_test
     def test_abbrevs2 (self):
         command_interpreter = self.dbg.GetCommandInterpreter()
         self.assertTrue(command_interpreter, VALID_COMMAND_INTERPRETER)
@@ -28,15 +32,7 @@ class CommonShortSpellingsTestCase(TestBase):
             ('ta st li', 'target stop-hook list'),
         ]
 
-        for (short, long) in abbrevs:
-            command_interpreter.ResolveCommand(short, result)
+        for (short_val, long_val) in abbrevs:
+            command_interpreter.ResolveCommand(short_val, result)
             self.assertTrue(result.Succeeded())
-            self.assertEqual(long, result.GetOutput())
-
-
-if __name__ == '__main__':
-    import atexit
-    lldb.SBDebugger.Initialize()
-    atexit.register(lambda: lldb.SBDebugger.Terminate())
-    unittest2.main()
-
+            self.assertEqual(long_val, result.GetOutput())

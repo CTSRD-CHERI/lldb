@@ -2,6 +2,10 @@
 Base class for gdb-remote test cases.
 """
 
+from __future__ import print_function
+
+import lldb_shared
+
 import errno
 import os
 import os.path
@@ -16,7 +20,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import unittest2
 from lldbtest import *
 from lldbgdbserverutils import *
 import logging
@@ -97,21 +100,21 @@ class GdbRemoteTestCaseBase(TestBase):
             try:
                 named_pipe.close()
             except:
-                print "failed to close named pipe"
+                print("failed to close named pipe")
                 None
 
             # Delete the pipe.
             try:
                 os.remove(named_pipe_path)
             except:
-                print "failed to delete named pipe: {}".format(named_pipe_path)
+                print("failed to delete named pipe: {}".format(named_pipe_path))
                 None
 
             # Delete the temp directory.
             try:
                 os.rmdir(temp_dir)
             except:
-                print "failed to delete temp dir: {}, directory contents: '{}'".format(temp_dir, os.listdir(temp_dir))
+                print("failed to delete temp dir: {}, directory contents: '{}'".format(temp_dir, os.listdir(temp_dir)))
                 None
 
         # Add the shutdown hook to clean up the named pipe.
@@ -158,7 +161,10 @@ class GdbRemoteTestCaseBase(TestBase):
             # Remote platforms don't support named pipe based port negotiation
             use_named_pipe = False
 
-            pid = run_shell_cmd("echo $PPID")
+            # Grab the ppid from /proc/[shell pid]/stat
+            shell_stat = run_shell_cmd("cat /proc/$$/stat")
+            # [pid] ([executable]) [state] [*ppid*]
+            pid = re.match(r"^\d+ \(.+\) . (\d+)", shell_stat).group(1)
             ls_output = run_shell_cmd("ls -l /proc/%s/exe" % pid)
             exe = ls_output.split()[-1]
 
@@ -439,7 +445,7 @@ class GdbRemoteTestCaseBase(TestBase):
             if can_write and sock in can_write:
                 written_byte_count = sock.send(request_bytes_remaining)
                 request_bytes_remaining = request_bytes_remaining[written_byte_count:]
-        self.assertEquals(len(request_bytes_remaining), 0)
+        self.assertEqual(len(request_bytes_remaining), 0)
 
     def do_handshake(self, stub_socket, timeout_seconds=5):
         # Write the ack.
@@ -448,7 +454,7 @@ class GdbRemoteTestCaseBase(TestBase):
         # Send the start no ack mode packet.
         NO_ACK_MODE_REQUEST = "$QStartNoAckMode#b0"
         bytes_sent = stub_socket.send(NO_ACK_MODE_REQUEST)
-        self.assertEquals(bytes_sent, len(NO_ACK_MODE_REQUEST))
+        self.assertEqual(bytes_sent, len(NO_ACK_MODE_REQUEST))
 
         # Receive the ack and "OK"
         self.expect_socket_recv(stub_socket, re.compile(r"^\+\$OK#[0-9a-fA-F]{2}$"), timeout_seconds)
@@ -511,7 +517,7 @@ class GdbRemoteTestCaseBase(TestBase):
         process_info_dict = { match.group(1):match.group(2) for match in re.finditer(r"([^:]+):([^;]+);", process_info_raw) }
 
         # Validate keys are known.
-        for (key, val) in process_info_dict.items():
+        for (key, val) in list(process_info_dict.items()):
             self.assertTrue(key in self._KNOWN_PROCESS_INFO_KEYS)
             self.assertIsNotNone(val)
 
@@ -545,7 +551,7 @@ class GdbRemoteTestCaseBase(TestBase):
         "encoding",
         "format",
         "set",
-        "gcc",
+        "ehframe",
         "dwarf",
         "generic",
         "container-regs",
@@ -619,7 +625,7 @@ class GdbRemoteTestCaseBase(TestBase):
         mem_region_dict = self.parse_key_val_dict(context.get("memory_region_response"))
 
         # Validate keys are known.
-        for (key, val) in mem_region_dict.items():
+        for (key, val) in list(mem_region_dict.items()):
             self.assertTrue(key in ["start", "size", "permissions", "error"])
             self.assertIsNotNone(val)
 
@@ -768,7 +774,7 @@ class GdbRemoteTestCaseBase(TestBase):
         # Send an interrupt, capture a T response.
         self.reset_test_sequence()
         self.test_sequence.add_log_lines(
-            ["read packet: {}".format(chr(03)),
+            ["read packet: {}".format(chr(3)),
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]+)([^#]+)#[0-9a-fA-F]{2}$", "capture":{1:"stop_result"} }],
             True)
         context = self.expect_gdbremote_sequence()
@@ -802,7 +808,7 @@ class GdbRemoteTestCaseBase(TestBase):
         kv_dict = self.parse_key_val_dict(stop_key_vals_text)
 
         registers = {}
-        for (key, val) in kv_dict.items():
+        for (key, val) in list(kv_dict.items()):
             if re.match(r"^[0-9a-fA-F]+$", key):
                 registers[int(key, 16)] = val
         return registers
@@ -870,7 +876,7 @@ class GdbRemoteTestCaseBase(TestBase):
 
             # Handle ending entry.
             if key == 0:
-                self.assertEquals(value, 0)
+                self.assertEqual(value, 0)
                 return auxv_dict
 
             # The key should not already be present.
@@ -917,7 +923,7 @@ class GdbRemoteTestCaseBase(TestBase):
     def add_interrupt_packets(self):
         self.test_sequence.add_log_lines([
             # Send the intterupt.
-            "read packet: {}".format(chr(03)),
+            "read packet: {}".format(chr(3)),
             # And wait for the stop notification.
             {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})(.*)#[0-9a-fA-F]{2}$", "capture":{1:"stop_signo", 2:"stop_key_val_text" } },
             ], True)
@@ -1001,7 +1007,7 @@ class GdbRemoteTestCaseBase(TestBase):
             # Flip the value by xoring with all 1s
             all_one_bits_raw = "ff" * (int(reg_info["bitsize"]) / 8)
             flipped_bits_int = initial_reg_value ^ int(all_one_bits_raw, 16)
-            # print "reg (index={}, name={}): val={}, flipped bits (int={}, hex={:x})".format(reg_index, reg_info["name"], initial_reg_value, flipped_bits_int, flipped_bits_int)
+            # print("reg (index={}, name={}): val={}, flipped bits (int={}, hex={:x})".format(reg_index, reg_info["name"], initial_reg_value, flipped_bits_int, flipped_bits_int))
 
             # Handle thread suffix for P.
             if thread_id:
@@ -1027,7 +1033,7 @@ class GdbRemoteTestCaseBase(TestBase):
                 successful_writes += 1
             else:
                 failed_writes += 1
-                # print "reg (index={}, name={}) write FAILED (error: {})".format(reg_index, reg_info["name"], P_response)
+                # print("reg (index={}, name={}) write FAILED (error: {})".format(reg_index, reg_info["name"], P_response))
 
             # Read back the register value, ensure it matches the flipped value.
             if P_response == "OK":
@@ -1045,7 +1051,7 @@ class GdbRemoteTestCaseBase(TestBase):
 
                 if verify_bits != flipped_bits_int:
                     # Some registers, like mxcsrmask and others, will permute what's written.  Adjust succeed/fail counts.
-                    # print "reg (index={}, name={}): read verify FAILED: wrote {:x}, verify read back {:x}".format(reg_index, reg_info["name"], flipped_bits_int, verify_bits)
+                    # print("reg (index={}, name={}): read verify FAILED: wrote {:x}, verify read back {:x}".format(reg_index, reg_info["name"], flipped_bits_int, verify_bits))
                     successful_writes -= 1
                     failed_writes +=1
 
@@ -1130,7 +1136,7 @@ class GdbRemoteTestCaseBase(TestBase):
 
             # Build the packet for the single step instruction.  We replace {thread}, if present, with the thread_id.
             step_packet = "read packet: ${}#00".format(re.sub(r"{thread}", "{:x}".format(thread_id), step_instruction))
-            # print "\nstep_packet created: {}\n".format(step_packet)
+            # print("\nstep_packet created: {}\n".format(step_packet))
 
             # Single step.
             self.reset_test_sequence()
@@ -1150,7 +1156,7 @@ class GdbRemoteTestCaseBase(TestBase):
             context = self.expect_gdbremote_sequence()
             self.assertIsNotNone(context)
             self.assertIsNotNone(context.get("stop_signo"))
-            self.assertEquals(int(context.get("stop_signo"), 16),
+            self.assertEqual(int(context.get("stop_signo"), 16),
                     lldbutil.get_signal_number('SIGTRAP'))
 
             single_step_count += 1
@@ -1203,7 +1209,7 @@ class GdbRemoteTestCaseBase(TestBase):
              { "type":"output_match", "regex":r"^code address: 0x([0-9a-fA-F]+)\r\ndata address: 0x([0-9a-fA-F]+)\r\ndata address: 0x([0-9a-fA-F]+)\r\n$", 
                "capture":{ 1:"function_address", 2:"g_c1_address", 3:"g_c2_address"} },
              # Now stop the inferior.
-             "read packet: {}".format(chr(03)),
+             "read packet: {}".format(chr(3)),
              # And wait for the stop notification.
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})thread:([0-9a-fA-F]+);", "capture":{1:"stop_signo", 2:"stop_thread_id"} }],
             True)
@@ -1264,19 +1270,19 @@ class GdbRemoteTestCaseBase(TestBase):
         args["expected_g_c2"] = "0"
         (state_reached, step_count) = self.count_single_steps_until_true(main_thread_id, self.g_c1_c2_contents_are, args, max_step_count=5, use_Hc_packet=use_Hc_packet, step_instruction=step_instruction)
         self.assertTrue(state_reached)
-        self.assertEquals(step_count, 1)
+        self.assertEqual(step_count, 1)
 
         # Verify we hit the next state.
         args["expected_g_c1"] = "0"
         args["expected_g_c2"] = "0"
         (state_reached, step_count) = self.count_single_steps_until_true(main_thread_id, self.g_c1_c2_contents_are, args, max_step_count=5, use_Hc_packet=use_Hc_packet, step_instruction=step_instruction)
         self.assertTrue(state_reached)
-        self.assertEquals(step_count, 1)
+        self.assertEqual(step_count, 1)
 
         # Verify we hit the next state.
         args["expected_g_c1"] = "0"
         args["expected_g_c2"] = "1"
         (state_reached, step_count) = self.count_single_steps_until_true(main_thread_id, self.g_c1_c2_contents_are, args, max_step_count=5, use_Hc_packet=use_Hc_packet, step_instruction=step_instruction)
         self.assertTrue(state_reached)
-        self.assertEquals(step_count, 1)
+        self.assertEqual(step_count, 1)
 

@@ -82,10 +82,10 @@ def getCmdLine(d):
 
     def setOrAppendVariable(k, v):
         append_vars = ["CFLAGS_EXTRAS", "LD_EXTRAS"]
-        if k in append_vars and os.environ.has_key(k):
+        if k in append_vars and k in os.environ:
             v = os.environ[k] + " " + v
         return pattern % (k, v)
-    cmdline = " ".join([setOrAppendVariable(k, v) for k, v in d.items()])
+    cmdline = " ".join([setOrAppendVariable(k, v) for k, v in list(d.items())])
 
     return cmdline
 
@@ -111,6 +111,17 @@ def buildDwarf(sender=None, architecture=None, compiler=None, dictionary=None, c
 
     lldbtest.system(commands, sender=sender)
     # True signifies that we can handle building dwarf.
+    return True
+
+def buildDwo(sender=None, architecture=None, compiler=None, dictionary=None, clean=True):
+    """Build the binaries with dwarf debug info."""
+    commands = []
+    if clean:
+        commands.append([getMake(), "clean", getCmdLine(dictionary)])
+    commands.append([getMake(), "MAKE_DSYM=NO", "MAKE_DWO=YES", getArchSpec(architecture), getCCSpec(compiler), getCmdLine(dictionary)])
+
+    lldbtest.system(commands, sender=sender)
+    # True signifies that we can handle building dwo.
     return True
 
 def cleanup(sender=None, dictionary=None):

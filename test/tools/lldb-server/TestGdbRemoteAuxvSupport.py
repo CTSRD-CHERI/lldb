@@ -1,4 +1,6 @@
-import unittest2
+from __future__ import print_function
+
+import lldb_shared
 
 import gdbremote_testcase
 from lldbtest import *
@@ -66,7 +68,7 @@ class TestGdbRemoteAuxvSupport(gdbremote_testcase.GdbRemoteTestCaseBase):
 
         # Ensure we end up with all auxv data in one packet.
         # FIXME don't assume it all comes back in one packet.
-        self.assertEquals(context.get("response_type"), "l")
+        self.assertEqual(context.get("response_type"), "l")
 
         # Decode binary data.
         content_raw = context.get("content_raw")
@@ -87,10 +89,9 @@ class TestGdbRemoteAuxvSupport(gdbremote_testcase.GdbRemoteTestCaseBase):
     #
 
     @llgs_test
-    @dwarf_test
-    def test_supports_auxv_llgs_dwarf(self):
+    def test_supports_auxv_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.supports_auxv()
 
@@ -99,22 +100,20 @@ class TestGdbRemoteAuxvSupport(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertIsNotNone(auxv_data)
 
         # Ensure auxv data is a multiple of 2*word_size (there should be two unsigned long fields per auxv entry).
-        self.assertEquals(len(auxv_data) % (2*word_size), 0)
-        # print "auxv contains {} entries".format(len(auxv_data) / (2*word_size))
+        self.assertEqual(len(auxv_data) % (2*word_size), 0)
+        # print("auxv contains {} entries".format(len(auxv_data) / (2*word_size)))
 
     @debugserver_test
-    @dsym_test
-    def test_auxv_data_is_correct_size_debugserver_dsym(self):
+    def test_auxv_data_is_correct_size_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.auxv_data_is_correct_size()
 
     @llgs_test
-    @dwarf_test
-    def test_auxv_data_is_correct_size_llgs_dwarf(self):
+    def test_auxv_data_is_correct_size_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.auxv_data_is_correct_size()
 
@@ -140,21 +139,19 @@ class TestGdbRemoteAuxvSupport(gdbremote_testcase.GdbRemoteTestCaseBase):
         for auxv_key in auxv_dict:
             self.assertTrue(auxv_key >= 1)
             self.assertTrue(auxv_key <= 1000)
-        # print "auxv dict: {}".format(auxv_dict)
+        # print("auxv dict: {}".format(auxv_dict))
 
     @debugserver_test
-    @dsym_test
-    def test_auxv_keys_look_valid_debugserver_dsym(self):
+    def test_auxv_keys_look_valid_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.auxv_keys_look_valid()
 
     @llgs_test
-    @dwarf_test
-    def test_auxv_keys_look_valid_llgs_dwarf(self):
+    def test_auxv_keys_look_valid_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.auxv_keys_look_valid()
 
@@ -187,24 +184,18 @@ class TestGdbRemoteAuxvSupport(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertIsNotNone(auxv_dict_iterated)
 
         # Verify both types of data collection returned same content.
-        self.assertEquals(auxv_dict_iterated, auxv_dict)
+        self.assertEqual(auxv_dict_iterated, auxv_dict)
 
     @debugserver_test
-    @dsym_test
-    def test_auxv_chunked_reads_work_debugserver_dsym(self):
+    def test_auxv_chunked_reads_work_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.auxv_chunked_reads_work()
 
     @llgs_test
-    @dwarf_test
-    def test_auxv_chunked_reads_work_llgs_dwarf(self):
+    def test_auxv_chunked_reads_work_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.auxv_chunked_reads_work()
-
-
-if __name__ == '__main__':
-    unittest2.main()

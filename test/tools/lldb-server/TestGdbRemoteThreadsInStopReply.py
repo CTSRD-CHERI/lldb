@@ -1,4 +1,6 @@
-import unittest2
+from __future__ import print_function
+
+import lldb_shared
 
 import gdbremote_testcase
 from lldbtest import *
@@ -34,7 +36,7 @@ class TestGdbRemoteThreadsInStopReply(gdbremote_testcase.GdbRemoteTestCaseBase):
         time.sleep(1)
         self.reset_test_sequence()
         self.test_sequence.add_log_lines([
-            "read packet: {}".format(chr(03)),
+            "read packet: {}".format(chr(3)),
             {"direction":"send", "regex":r"^\$T([0-9a-fA-F]+)([^#]+)#[0-9a-fA-F]{2}$", "capture":{1:"stop_result", 2:"key_vals_text"} },
             ], True)
         context = self.expect_gdbremote_sequence()
@@ -43,13 +45,13 @@ class TestGdbRemoteThreadsInStopReply(gdbremote_testcase.GdbRemoteTestCaseBase):
         # Wait until all threads have started.
         threads = self.wait_for_thread_count(thread_count, timeout_seconds=3)
         self.assertIsNotNone(threads)
-        self.assertEquals(len(threads), thread_count)
+        self.assertEqual(len(threads), thread_count)
 
         # Run, then stop the process, grab the stop reply content.
         self.reset_test_sequence()
         self.test_sequence.add_log_lines([
             "read packet: $c#63",
-            "read packet: {}".format(chr(03)),
+            "read packet: {}".format(chr(3)),
             {"direction":"send", "regex":r"^\$T([0-9a-fA-F]+)([^#]+)#[0-9a-fA-F]{2}$", "capture":{1:"stop_result", 2:"key_vals_text"} },
             ], True)
         context = self.expect_gdbremote_sequence()
@@ -76,67 +78,61 @@ class TestGdbRemoteThreadsInStopReply(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertIsNotNone(context)
 
     @debugserver_test
-    @dsym_test
-    def test_QListThreadsInStopReply_supported_debugserver_dsym(self):
+    def test_QListThreadsInStopReply_supported_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.QListThreadsInStopReply_supported()
 
     @llgs_test
-    @dwarf_test
-    def test_QListThreadsInStopReply_supported_llgs_dwarf(self):
+    def test_QListThreadsInStopReply_supported_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.QListThreadsInStopReply_supported()
 
     def stop_reply_reports_multiple_threads(self, thread_count):
         # Gather threads from stop notification when QThreadsInStopReply is enabled.
         stop_reply_threads = self.gather_stop_reply_threads(self.ENABLE_THREADS_IN_STOP_REPLY_ENTRIES, thread_count)
-        self.assertEquals(len(stop_reply_threads), thread_count)
+        self.assertEqual(len(stop_reply_threads), thread_count)
 
     @debugserver_test
-    @dsym_test
-    def test_stop_reply_reports_multiple_threads_debugserver_dsym(self):
+    def test_stop_reply_reports_multiple_threads_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.stop_reply_reports_multiple_threads(5)
 
     @llgs_test
-    @dwarf_test
-    def test_stop_reply_reports_multiple_threads_llgs_dwarf(self):
+    def test_stop_reply_reports_multiple_threads_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.stop_reply_reports_multiple_threads(5)
 
     def no_QListThreadsInStopReply_supplies_no_threads(self, thread_count):
         # Gather threads from stop notification when QThreadsInStopReply is not enabled.
         stop_reply_threads = self.gather_stop_reply_threads(None, thread_count)
-        self.assertEquals(len(stop_reply_threads), 0)
+        self.assertEqual(len(stop_reply_threads), 0)
 
     @debugserver_test
-    @dsym_test
-    def test_no_QListThreadsInStopReply_supplies_no_threads_debugserver_dsym(self):
+    def test_no_QListThreadsInStopReply_supplies_no_threads_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.no_QListThreadsInStopReply_supplies_no_threads(5)
 
     @llgs_test
-    @dwarf_test
-    def test_no_QListThreadsInStopReply_supplies_no_threads_llgs_dwarf(self):
+    def test_no_QListThreadsInStopReply_supplies_no_threads_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.no_QListThreadsInStopReply_supplies_no_threads(5)
 
     def stop_reply_reports_correct_threads(self, thread_count):
         # Gather threads from stop notification when QThreadsInStopReply is enabled.
         stop_reply_threads = self.gather_stop_reply_threads(self.ENABLE_THREADS_IN_STOP_REPLY_ENTRIES, thread_count)
-        self.assertEquals(len(stop_reply_threads), thread_count)
+        self.assertEqual(len(stop_reply_threads), thread_count)
 
         # Gather threads from q{f,s}ThreadInfo.
         self.reset_test_sequence()
@@ -147,28 +143,22 @@ class TestGdbRemoteThreadsInStopReply(gdbremote_testcase.GdbRemoteTestCaseBase):
 
         threads = self.parse_threadinfo_packets(context)
         self.assertIsNotNone(threads)
-        self.assertEquals(len(threads), thread_count)
+        self.assertEqual(len(threads), thread_count)
         
         # Ensure each thread in q{f,s}ThreadInfo appears in stop reply threads
         for tid in threads:
             self.assertTrue(tid in stop_reply_threads)
 
     @debugserver_test
-    @dsym_test
-    def test_stop_reply_reports_correct_threads_debugserver_dsym(self):
+    def test_stop_reply_reports_correct_threads_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.stop_reply_reports_correct_threads(5)
 
     @llgs_test
-    @dwarf_test
-    def test_stop_reply_reports_correct_threads_llgs_dwarf(self):
+    def test_stop_reply_reports_correct_threads_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.stop_reply_reports_correct_threads(5)
-
-
-if __name__ == '__main__':
-    unittest2.main()

@@ -2,9 +2,12 @@
 Test that plugins that load commands work correctly.
 """
 
+from __future__ import print_function
+
+import lldb_shared
+
 import os, time
 import re
-import unittest2
 import lldb
 from lldbtest import *
 import lldbutil
@@ -13,15 +16,10 @@ class PluginCommandTestCase(TestBase):
 
     mydir = TestBase.compute_mydir(__file__)
 
-    def setUp(self):
-        # Call super's setUp().
-        TestBase.setUp(self)
-        self.lib_dir = os.environ["LLDB_LIB_DIR"]
-        self.implib_dir = os.environ["LLDB_IMPLIB_DIR"]
-
-    @expectedFailureFreeBSD('llvm.org/pr17430')
     @skipIfNoSBHeaders
     @skipIfHostIncompatibleWithRemote # Requires a compatible arch and platform to link against the host's built lldb lib.
+    @expectedFailureWindows("llvm.org/pr24778")
+    @no_debug_info_test
     def test_load_plugin(self):
         """Test that plugins that load commands work correctly."""
 
@@ -45,7 +43,7 @@ class PluginCommandTestCase(TestBase):
         retval = debugger.GetCommandInterpreter().HandleCommand("plugin_loaded_command child abc def ghi",retobj)
 
         if self.TraceOn():
-            print retobj.GetOutput()
+            print(retobj.GetOutput())
 
         self.expect(retobj,substrs = ['abc def ghi'], exe=False)
 
@@ -55,13 +53,6 @@ class PluginCommandTestCase(TestBase):
         retval = debugger.GetCommandInterpreter().HandleCommand("plugin_loaded_ ch abc def ghi",retobj)
 
         if self.TraceOn():
-            print retobj.GetOutput()
+            print(retobj.GetOutput())
 
         self.expect(retobj,substrs = ['abc def ghi'], exe=False)
-
-
-if __name__ == '__main__':
-    import atexit
-    lldb.SBDebugger.Initialize()
-    atexit.register(lambda: lldb.SBDebugger.Terminate())
-    unittest2.main()

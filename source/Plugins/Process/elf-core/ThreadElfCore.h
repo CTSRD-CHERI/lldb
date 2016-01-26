@@ -1,4 +1,4 @@
-//===-- ThreadElfCore.h ----------------------------------------*- C++ -*-===//
+//===-- ThreadElfCore.h -----------------------------------------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -10,8 +10,12 @@
 #ifndef liblldb_ThreadElfCore_h_
 #define liblldb_ThreadElfCore_h_
 
+// C Includes
+// C++ Includes
 #include <string>
 
+// Other libraries and framework includes
+// Project includes
 #include "lldb/Target/Thread.h"
 #include "lldb/Core/DataExtractor.h"
 
@@ -104,7 +108,6 @@ struct ELFLinuxPrPsInfo
                 return 0;
         }
     }
-
 };
 
 struct ThreadData
@@ -113,6 +116,7 @@ struct ThreadData
     lldb_private::DataExtractor fpregset;
     lldb_private::DataExtractor vregset;
     lldb_private::DataExtractor capregset;
+    lldb::tid_t tid;
     int signo;
     std::string name;
 };
@@ -120,23 +124,21 @@ struct ThreadData
 class ThreadElfCore : public lldb_private::Thread
 {
 public:
-    ThreadElfCore (lldb_private::Process &process, lldb::tid_t tid,
-                   const ThreadData &td);
+    ThreadElfCore (lldb_private::Process &process, const ThreadData &td);
 
-    virtual
-    ~ThreadElfCore ();
+    ~ThreadElfCore() override;
 
-    virtual void
-    RefreshStateAfterStop();
+    void
+    RefreshStateAfterStop() override;
 
-    virtual lldb::RegisterContextSP
-    GetRegisterContext ();
+    lldb::RegisterContextSP
+    GetRegisterContext() override;
 
-    virtual lldb::RegisterContextSP
-    CreateRegisterContextForFrame (lldb_private::StackFrame *frame);
+    lldb::RegisterContextSP
+    CreateRegisterContextForFrame(lldb_private::StackFrame *frame) override;
 
-    virtual void
-    ClearStackFrames ();
+    void
+    ClearStackFrames() override;
 
     static bool
     ThreadIDIsValid (lldb::tid_t thread)
@@ -144,8 +146,8 @@ public:
         return thread != 0;
     }
 
-    virtual const char *
-    GetName ()
+    const char *
+    GetName() override
     {
         if (m_thread_name.empty())
             return NULL;
@@ -153,7 +155,7 @@ public:
     }
 
     void
-    SetName (const char *name)
+    SetName(const char *name) override
     {
         if (name && name[0])
             m_thread_name.assign (name);
@@ -175,8 +177,7 @@ protected:
     lldb_private::DataExtractor m_vregset_data;
     lldb_private::DataExtractor m_capregset_data;
 
-    virtual bool CalculateStopInfo();
-
+    bool CalculateStopInfo() override;
 };
 
-#endif  // liblldb_ThreadElfCore_h_
+#endif // liblldb_ThreadElfCore_h_

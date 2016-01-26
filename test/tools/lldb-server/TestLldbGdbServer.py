@@ -10,11 +10,15 @@ gdb remote packet functional areas.  For now it contains
 the initial set of tests implemented.
 """
 
+from __future__ import print_function
+
+import lldb_shared
+
+import unittest2
 import gdbremote_testcase
 import lldbgdbserverutils
 import platform
 import signal
-import unittest2
 from lldbtest import *
 
 class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
@@ -116,17 +120,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.expect_gdbremote_sequence()
 
     @debugserver_test
-    @dsym_test
-    def test_start_inferior_debugserver_dsym(self):
+    def test_start_inferior_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.start_inferior()
 
     @llgs_test
-    @dwarf_test
-    def test_start_inferior_llgs_dwarf(self):
+    def test_start_inferior_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.start_inferior()
 
     def inferior_exit_0(self):
@@ -145,17 +147,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.expect_gdbremote_sequence()
 
     @debugserver_test
-    @dsym_test
-    def test_inferior_exit_0_debugserver_dsym(self):
+    def test_inferior_exit_0_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.inferior_exit_0()
 
     @llgs_test
-    @dwarf_test
-    def test_inferior_exit_0_llgs_dwarf(self):
+    def test_inferior_exit_0_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.inferior_exit_0()
 
     def inferior_exit_42(self):
@@ -179,17 +179,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.expect_gdbremote_sequence()
 
     @debugserver_test
-    @dsym_test
-    def test_inferior_exit_42_debugserver_dsym(self):
+    def test_inferior_exit_42_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.inferior_exit_42()
 
     @llgs_test
-    @dwarf_test
-    def test_inferior_exit_42_llgs_dwarf(self):
+    def test_inferior_exit_42_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.inferior_exit_42()
 
     def c_packet_works(self):
@@ -208,17 +206,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.expect_gdbremote_sequence()
 
     @debugserver_test
-    @dsym_test
-    def test_c_packet_works_debugserver_dsym(self):
+    def test_c_packet_works_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.c_packet_works()
 
     @llgs_test
-    @dwarf_test
-    def test_c_packet_works_llgs_dwarf(self):
+    def test_c_packet_works_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.c_packet_works()
 
     def inferior_print_exit(self):
@@ -242,17 +238,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertIsNotNone(context)
 
     @debugserver_test
-    @dsym_test
-    def test_inferior_print_exit_debugserver_dsym(self):
+    def test_inferior_print_exit_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.inferior_print_exit()
 
     @llgs_test
-    @dwarf_test
-    def test_inferior_print_exit_llgs_dwarf(self):
+    def test_inferior_print_exit_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.inferior_print_exit()
 
     def first_launch_stop_reply_thread_matches_first_qC(self):
@@ -275,17 +269,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.expect_gdbremote_sequence()
 
     @debugserver_test
-    @dsym_test
-    def test_first_launch_stop_reply_thread_matches_first_qC_debugserver_dsym(self):
+    def test_first_launch_stop_reply_thread_matches_first_qC_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.first_launch_stop_reply_thread_matches_first_qC()
 
     @llgs_test
-    @dwarf_test
-    def test_first_launch_stop_reply_thread_matches_first_qC_llgs_dwarf(self):
+    def test_first_launch_stop_reply_thread_matches_first_qC_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.first_launch_stop_reply_thread_matches_first_qC()
 
     def attach_commandline_continue_app_exits(self):
@@ -308,18 +300,16 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertFalse(lldbgdbserverutils.process_is_running(procs["inferior"].pid, False))
 
     @debugserver_test
-    @dsym_test
-    def test_attach_commandline_continue_app_exits_debugserver_dsym(self):
+    def test_attach_commandline_continue_app_exits_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_attach()
         self.attach_commandline_continue_app_exits()
 
     @llgs_test
-    @dwarf_test
-    def test_attach_commandline_continue_app_exits_llgs_dwarf(self):
+    def test_attach_commandline_continue_app_exits_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_attach()
         self.attach_commandline_continue_app_exits()
 
@@ -346,17 +336,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assert_valid_reg_info(lldbgdbserverutils.parse_reg_info_response(reg_info_packet))
 
     @debugserver_test
-    @dsym_test
-    def test_qRegisterInfo_returns_one_valid_result_debugserver_dsym(self):
+    def test_qRegisterInfo_returns_one_valid_result_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.qRegisterInfo_returns_one_valid_result()
 
     @llgs_test
-    @dwarf_test
-    def test_qRegisterInfo_returns_one_valid_result_llgs_dwarf(self):
+    def test_qRegisterInfo_returns_one_valid_result_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.qRegisterInfo_returns_one_valid_result()
 
     def qRegisterInfo_returns_all_valid_results(self):
@@ -379,17 +367,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
             self.assert_valid_reg_info(reg_info)
 
     @debugserver_test
-    @dsym_test
-    def test_qRegisterInfo_returns_all_valid_results_debugserver_dsym(self):
+    def test_qRegisterInfo_returns_all_valid_results_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.qRegisterInfo_returns_all_valid_results()
 
     @llgs_test
-    @dwarf_test
-    def test_qRegisterInfo_returns_all_valid_results_llgs_dwarf(self):
+    def test_qRegisterInfo_returns_all_valid_results_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.qRegisterInfo_returns_all_valid_results()
 
     def qRegisterInfo_contains_required_generics(self):
@@ -426,17 +412,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertTrue('flags' in generic_regs)
 
     @debugserver_test
-    @dsym_test
-    def test_qRegisterInfo_contains_required_generics_debugserver_dsym(self):
+    def test_qRegisterInfo_contains_required_generics_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.qRegisterInfo_contains_required_generics()
 
     @llgs_test
-    @dwarf_test
-    def test_qRegisterInfo_contains_required_generics_llgs_dwarf(self):
+    def test_qRegisterInfo_contains_required_generics_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.qRegisterInfo_contains_required_generics()
 
     def qRegisterInfo_contains_at_least_one_register_set(self):
@@ -462,17 +446,15 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertTrue(len(register_sets) >= 1)
 
     @debugserver_test
-    @dsym_test
-    def test_qRegisterInfo_contains_at_least_one_register_set_debugserver_dsym(self):
+    def test_qRegisterInfo_contains_at_least_one_register_set_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.qRegisterInfo_contains_at_least_one_register_set()
 
     @llgs_test
-    @dwarf_test
-    def test_qRegisterInfo_contains_at_least_one_register_set_llgs_dwarf(self):
+    def test_qRegisterInfo_contains_at_least_one_register_set_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.qRegisterInfo_contains_at_least_one_register_set()
 
     def targetHasAVX(self):
@@ -515,13 +497,12 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
 
         # Collect all generics found.
         register_sets = { reg_info['set']:1 for reg_info in reg_infos if 'set' in reg_info }
-        self.assertEquals(self.targetHasAVX(), "Advanced Vector Extensions" in register_sets)
+        self.assertEqual(self.targetHasAVX(), "Advanced Vector Extensions" in register_sets)
 
     @llgs_test
-    @dwarf_test
-    def test_qRegisterInfo_contains_avx_registers_llgs_dwarf(self):
+    def test_qRegisterInfo_contains_avx_registers_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.qRegisterInfo_contains_avx_registers()
 
     def qThreadInfo_contains_thread(self):
@@ -540,34 +521,30 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertEqual(len(threads), 1)
 
     @debugserver_test
-    @dsym_test
-    def test_qThreadInfo_contains_thread_launch_debugserver_dsym(self):
+    def test_qThreadInfo_contains_thread_launch_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.qThreadInfo_contains_thread()
 
     @llgs_test
-    @dwarf_test
-    def test_qThreadInfo_contains_thread_launch_llgs_dwarf(self):
+    def test_qThreadInfo_contains_thread_launch_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.qThreadInfo_contains_thread()
 
     @debugserver_test
-    @dsym_test
-    def test_qThreadInfo_contains_thread_attach_debugserver_dsym(self):
+    def test_qThreadInfo_contains_thread_attach_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_attach()
         self.qThreadInfo_contains_thread()
 
     @llgs_test
-    @dwarf_test
-    def test_qThreadInfo_contains_thread_attach_llgs_dwarf(self):
+    def test_qThreadInfo_contains_thread_attach_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_attach()
         self.qThreadInfo_contains_thread()
 
@@ -597,37 +574,33 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         QC_thread_id = int(QC_thread_id_hex, 16)
 
         # Those two should be the same.
-        self.assertEquals(threads[0], QC_thread_id)
+        self.assertEqual(threads[0], QC_thread_id)
 
     @debugserver_test
-    @dsym_test
-    def test_qThreadInfo_matches_qC_launch_debugserver_dsym(self):
+    def test_qThreadInfo_matches_qC_launch_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.qThreadInfo_matches_qC()
 
     @llgs_test
-    @dwarf_test
-    def test_qThreadInfo_matches_qC_launch_llgs_dwarf(self):
+    def test_qThreadInfo_matches_qC_launch_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.qThreadInfo_matches_qC()
 
     @debugserver_test
-    @dsym_test
-    def test_qThreadInfo_matches_qC_attach_debugserver_dsym(self):
+    def test_qThreadInfo_matches_qC_attach_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_attach()
         self.qThreadInfo_matches_qC()
 
     @llgs_test
-    @dwarf_test
-    def test_qThreadInfo_matches_qC_attach_llgs_dwarf(self):
+    def test_qThreadInfo_matches_qC_attach_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_attach()
         self.qThreadInfo_matches_qC()
 
@@ -667,40 +640,36 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
             # Verify the response length.
             p_response = context.get("p_response")
             self.assertIsNotNone(p_response)
-            self.assertEquals(len(p_response), 2 * int(reg_info["bitsize"]) / 8)
+            self.assertEqual(len(p_response), 2 * int(reg_info["bitsize"]) / 8)
 
             # Increment loop
             reg_index += 1
 
     @debugserver_test
-    @dsym_test
-    def test_p_returns_correct_data_size_for_each_qRegisterInfo_launch_debugserver_dsym(self):
+    def test_p_returns_correct_data_size_for_each_qRegisterInfo_launch_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.p_returns_correct_data_size_for_each_qRegisterInfo()
 
     @llgs_test
-    @dwarf_test
-    def test_p_returns_correct_data_size_for_each_qRegisterInfo_launch_llgs_dwarf(self):
+    def test_p_returns_correct_data_size_for_each_qRegisterInfo_launch_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.p_returns_correct_data_size_for_each_qRegisterInfo()
 
     @debugserver_test
-    @dsym_test
-    def test_p_returns_correct_data_size_for_each_qRegisterInfo_attach_debugserver_dsym(self):
+    def test_p_returns_correct_data_size_for_each_qRegisterInfo_attach_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_attach()
         self.p_returns_correct_data_size_for_each_qRegisterInfo()
 
     @llgs_test
-    @dwarf_test
-    def test_p_returns_correct_data_size_for_each_qRegisterInfo_attach_llgs_dwarf(self):
+    def test_p_returns_correct_data_size_for_each_qRegisterInfo_attach_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_attach()
         self.p_returns_correct_data_size_for_each_qRegisterInfo()
 
@@ -713,7 +682,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
 
         # Wait at most x seconds for 3 threads to be present.
         threads = self.wait_for_thread_count(3, timeout_seconds=5)
-        self.assertEquals(len(threads), 3)
+        self.assertEqual(len(threads), 3)
 
         # verify we can $H to each thead, and $qC matches the thread we set.
         for thread in threads:
@@ -731,37 +700,33 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
 
             # Verify the thread id.
             self.assertIsNotNone(context.get("thread_id"))
-            self.assertEquals(int(context.get("thread_id"), 16), thread)
+            self.assertEqual(int(context.get("thread_id"), 16), thread)
 
     @debugserver_test
-    @dsym_test
-    def test_Hg_switches_to_3_threads_launch_debugserver_dsym(self):
+    def test_Hg_switches_to_3_threads_launch_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.Hg_switches_to_3_threads()
 
     @llgs_test
-    @dwarf_test
-    def test_Hg_switches_to_3_threads_launch_llgs_dwarf(self):
+    def test_Hg_switches_to_3_threads_launch_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.Hg_switches_to_3_threads()
 
     @debugserver_test
-    @dsym_test
-    def test_Hg_switches_to_3_threads_attach_debugserver_dsym(self):
+    def test_Hg_switches_to_3_threads_attach_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_attach()
         self.Hg_switches_to_3_threads()
 
     @llgs_test
-    @dwarf_test
-    def test_Hg_switches_to_3_threads_attach_llgs_dwarf(self):
+    def test_Hg_switches_to_3_threads_attach_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_attach()
         self.Hg_switches_to_3_threads()
 
@@ -865,23 +830,21 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
             post_handle_thread_id = context.get("post_handle_thread_id")
             self.assertIsNotNone(post_handle_thread_id)
             post_handle_thread_id = int(post_handle_thread_id, 16)
-            self.assertEquals(post_handle_thread_id, print_thread_id)
+            self.assertEqual(post_handle_thread_id, print_thread_id)
 
-    @debugserver_test
-    @dsym_test
     @unittest2.expectedFailure()
-    def test_Hc_then_Csignal_signals_correct_thread_launch_debugserver_dsym(self):
+    @debugserver_test
+    def test_Hc_then_Csignal_signals_correct_thread_launch_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         # Darwin debugserver translates some signals like SIGSEGV into some gdb expectations about fixed signal numbers.
         self.Hc_then_Csignal_signals_correct_thread(self.TARGET_EXC_BAD_ACCESS)
 
     @llgs_test
-    @dwarf_test
-    def test_Hc_then_Csignal_signals_correct_thread_launch_llgs_dwarf(self):
+    def test_Hc_then_Csignal_signals_correct_thread_launch_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.Hc_then_Csignal_signals_correct_thread(lldbutil.get_signal_number('SIGSEGV'))
 
@@ -902,7 +865,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
              # Note we require launch-only testing so we can get inferior otuput.
              { "type":"output_match", "regex":r"^data address: 0x([0-9a-fA-F]+)\r\n$", "capture":{ 1:"message_address"} },
              # Now stop the inferior.
-             "read packet: {}".format(chr(03)),
+             "read packet: {}".format(chr(3)),
              # And wait for the stop notification.
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})thread:([0-9a-fA-F]+);", "capture":{1:"stop_signo", 2:"stop_thread_id"} }],
             True)
@@ -929,21 +892,19 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         # Ensure what we read from inferior memory is what we wrote.
         self.assertIsNotNone(context.get("read_contents"))
         read_contents = context.get("read_contents").decode("hex")
-        self.assertEquals(read_contents, MEMORY_CONTENTS)
+        self.assertEqual(read_contents, MEMORY_CONTENTS)
 
     @debugserver_test
-    @dsym_test
-    def test_m_packet_reads_memory_debugserver_dsym(self):
+    def test_m_packet_reads_memory_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.m_packet_reads_memory()
 
     @llgs_test
-    @dwarf_test
-    def test_m_packet_reads_memory_llgs_dwarf(self):
+    def test_m_packet_reads_memory_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.m_packet_reads_memory()
 
@@ -959,18 +920,16 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.expect_gdbremote_sequence()
 
     @debugserver_test
-    @dsym_test
-    def test_qMemoryRegionInfo_is_supported_debugserver_dsym(self):
+    def test_qMemoryRegionInfo_is_supported_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_is_supported()
 
     @llgs_test
-    @dwarf_test
-    def test_qMemoryRegionInfo_is_supported_llgs_dwarf(self):
+    def test_qMemoryRegionInfo_is_supported_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_is_supported()
 
@@ -988,7 +947,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
              # Note we require launch-only testing so we can get inferior otuput.
              { "type":"output_match", "regex":r"^code address: 0x([0-9a-fA-F]+)\r\n$", "capture":{ 1:"code_address"} },
              # Now stop the inferior.
-             "read packet: {}".format(chr(03)),
+             "read packet: {}".format(chr(3)),
              # And wait for the stop notification.
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})thread:([0-9a-fA-F]+);", "capture":{1:"stop_signo", 2:"stop_thread_id"} }],
             True)
@@ -1022,18 +981,16 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assert_address_within_memory_region(code_address, mem_region_dict)
 
     @debugserver_test
-    @dsym_test
-    def test_qMemoryRegionInfo_reports_code_address_as_executable_debugserver_dsym(self):
+    def test_qMemoryRegionInfo_reports_code_address_as_executable_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_reports_code_address_as_executable()
 
     @llgs_test
-    @dwarf_test
-    def test_qMemoryRegionInfo_reports_code_address_as_executable_llgs_dwarf(self):
+    def test_qMemoryRegionInfo_reports_code_address_as_executable_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_reports_code_address_as_executable()
 
@@ -1051,7 +1008,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
              # Note we require launch-only testing so we can get inferior otuput.
              { "type":"output_match", "regex":r"^stack address: 0x([0-9a-fA-F]+)\r\n$", "capture":{ 1:"stack_address"} },
              # Now stop the inferior.
-             "read packet: {}".format(chr(03)),
+             "read packet: {}".format(chr(3)),
              # And wait for the stop notification.
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})thread:([0-9a-fA-F]+);", "capture":{1:"stop_signo", 2:"stop_thread_id"} }],
             True)
@@ -1085,18 +1042,16 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assert_address_within_memory_region(stack_address, mem_region_dict)
 
     @debugserver_test
-    @dsym_test
-    def test_qMemoryRegionInfo_reports_stack_address_as_readable_writeable_debugserver_dsym(self):
+    def test_qMemoryRegionInfo_reports_stack_address_as_readable_writeable_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_reports_stack_address_as_readable_writeable()
 
     @llgs_test
-    @dwarf_test
-    def test_qMemoryRegionInfo_reports_stack_address_as_readable_writeable_llgs_dwarf(self):
+    def test_qMemoryRegionInfo_reports_stack_address_as_readable_writeable_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_reports_stack_address_as_readable_writeable()
 
@@ -1114,7 +1069,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
              # Note we require launch-only testing so we can get inferior otuput.
              { "type":"output_match", "regex":r"^heap address: 0x([0-9a-fA-F]+)\r\n$", "capture":{ 1:"heap_address"} },
              # Now stop the inferior.
-             "read packet: {}".format(chr(03)),
+             "read packet: {}".format(chr(3)),
              # And wait for the stop notification.
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})thread:([0-9a-fA-F]+);", "capture":{1:"stop_signo", 2:"stop_thread_id"} }],
             True)
@@ -1149,18 +1104,16 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
 
 
     @debugserver_test
-    @dsym_test
-    def test_qMemoryRegionInfo_reports_heap_address_as_readable_writeable_debugserver_dsym(self):
+    def test_qMemoryRegionInfo_reports_heap_address_as_readable_writeable_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_reports_heap_address_as_readable_writeable()
 
     @llgs_test
-    @dwarf_test
-    def test_qMemoryRegionInfo_reports_heap_address_as_readable_writeable_llgs_dwarf(self):
+    def test_qMemoryRegionInfo_reports_heap_address_as_readable_writeable_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.qMemoryRegionInfo_reports_heap_address_as_readable_writeable()
 
@@ -1179,7 +1132,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
              # Note we require launch-only testing so we can get inferior otuput.
              { "type":"output_match", "regex":r"^code address: 0x([0-9a-fA-F]+)\r\n$", "capture":{ 1:"function_address"} },
              # Now stop the inferior.
-             "read packet: {}".format(chr(03)),
+             "read packet: {}".format(chr(3)),
              # And wait for the stop notification.
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})thread:([0-9a-fA-F]+);", "capture":{1:"stop_signo", 2:"stop_thread_id"} }],
             True)
@@ -1219,12 +1172,12 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         # Verify the stop signal reported was the breakpoint signal number.
         stop_signo = context.get("stop_signo")
         self.assertIsNotNone(stop_signo)
-        self.assertEquals(int(stop_signo,16), lldbutil.get_signal_number('SIGTRAP'))
+        self.assertEqual(int(stop_signo,16), lldbutil.get_signal_number('SIGTRAP'))
 
         # Ensure we did not receive any output.  If the breakpoint was not set, we would
         # see output (from a launched process with captured stdio) printing a hello, world message.
         # That would indicate the breakpoint didn't take.
-        self.assertEquals(len(context["O_content"]), 0)
+        self.assertEqual(len(context["O_content"]), 0)
 
         # Verify that the PC for the main thread is where we expect it - right at the breakpoint address.
         # This acts as a another validation on the register reading code.
@@ -1246,7 +1199,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
 
         # Convert from target endian to int.
         returned_pc = lldbgdbserverutils.unpack_register_hex_unsigned(endian, p_response)
-        self.assertEquals(returned_pc, function_address)
+        self.assertEqual(returned_pc, function_address)
 
         # Verify that a breakpoint remove and continue gets us the expected output.
         self.reset_test_sequence()
@@ -1268,18 +1221,16 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertIsNotNone(context)
 
     @debugserver_test
-    @dsym_test
-    def test_software_breakpoint_set_and_remove_work_debugserver_dsym(self):
+    def test_software_breakpoint_set_and_remove_work_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.software_breakpoint_set_and_remove_work()
 
     @llgs_test
-    @dwarf_test
-    def test_software_breakpoint_set_and_remove_work_llgs_dwarf(self):
+    def test_software_breakpoint_set_and_remove_work_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.software_breakpoint_set_and_remove_work()
 
@@ -1298,18 +1249,16 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         self.assertTrue(len(supported_dict) > 0)
 
     @debugserver_test
-    @dsym_test
-    def test_qSupported_returns_known_stub_features_debugserver_dsym(self):
+    def test_qSupported_returns_known_stub_features_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.qSupported_returns_known_stub_features()
 
     @llgs_test
-    @dwarf_test
-    def test_qSupported_returns_known_stub_features_llgs_dwarf(self):
+    def test_qSupported_returns_known_stub_features_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.qSupported_returns_known_stub_features()
 
@@ -1326,7 +1275,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
              # Note we require launch-only testing so we can get inferior otuput.
              { "type":"output_match", "regex":r"^data address: 0x([0-9a-fA-F]+)\r\n$", "capture":{ 1:"message_address"} },
              # Now stop the inferior.
-             "read packet: {}".format(chr(03)),
+             "read packet: {}".format(chr(3)),
              # And wait for the stop notification.
              {"direction":"send", "regex":r"^\$T([0-9a-fA-F]{2})thread:([0-9a-fA-F]+);", "capture":{1:"stop_signo", 2:"stop_thread_id"} }],
             True)
@@ -1355,21 +1304,19 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
         # Ensure what we read from inferior memory is what we wrote.
         printed_message = context.get("printed_message")
         self.assertIsNotNone(printed_message)
-        self.assertEquals(printed_message, TEST_MESSAGE + "X")
+        self.assertEqual(printed_message, TEST_MESSAGE + "X")
 
     @debugserver_test
-    @dsym_test
-    def test_written_M_content_reads_back_correctly_debugserver_dsym(self):
+    def test_written_M_content_reads_back_correctly_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.written_M_content_reads_back_correctly()
 
     @llgs_test
-    @dwarf_test
-    def test_written_M_content_reads_back_correctly_llgs_dwarf(self):
+    def test_written_M_content_reads_back_correctly_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.written_M_content_reads_back_correctly()
 
@@ -1398,24 +1345,22 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
 
         # Write flipped bit pattern of existing value to each register.
         (successful_writes, failed_writes) = self.flip_all_bits_in_each_register_value(gpr_reg_infos, endian)
-        # print "successful writes: {}, failed writes: {}".format(successful_writes, failed_writes)
+        # print("successful writes: {}, failed writes: {}".format(successful_writes, failed_writes))
         self.assertTrue(successful_writes > 0)
 
     # Note: as of this moment, a hefty number of the GPR writes are failing with E32 (everything except rax-rdx, rdi, rsi, rbp).
     # Come back to this.  I have the test rigged to verify that at least some of the bit-flip writes work.
     @debugserver_test
-    @dsym_test
-    def test_P_writes_all_gpr_registers_debugserver_dsym(self):
+    def test_P_writes_all_gpr_registers_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.P_writes_all_gpr_registers()
 
     @llgs_test
-    @dwarf_test
-    def test_P_writes_all_gpr_registers_llgs_dwarf(self):
+    def test_P_writes_all_gpr_registers_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.P_writes_all_gpr_registers()
 
@@ -1449,7 +1394,7 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
 
         # Wait for 3 threads to be present.
         threads = self.wait_for_thread_count(3, timeout_seconds=5)
-        self.assertEquals(len(threads), 3)
+        self.assertEqual(len(threads), 3)
 
         expected_reg_values = []
         register_increment = 1
@@ -1507,26 +1452,20 @@ class LldbGdbServerTestCase(gdbremote_testcase.GdbRemoteTestCaseBase):
             read_value = lldbgdbserverutils.unpack_register_hex_unsigned(endian, p_response)
 
             # Make sure we read back what we wrote.
-            self.assertEquals(read_value, expected_reg_values[thread_index])
+            self.assertEqual(read_value, expected_reg_values[thread_index])
             thread_index += 1
 
     # Note: as of this moment, a hefty number of the GPR writes are failing with E32 (everything except rax-rdx, rdi, rsi, rbp).
     @debugserver_test
-    @dsym_test
-    def test_P_and_p_thread_suffix_work_debugserver_dsym(self):
+    def test_P_and_p_thread_suffix_work_debugserver(self):
         self.init_debugserver_test()
-        self.buildDsym()
+        self.build()
         self.set_inferior_startup_launch()
         self.P_and_p_thread_suffix_work()
 
     @llgs_test
-    @dwarf_test
-    def test_P_and_p_thread_suffix_work_llgs_dwarf(self):
+    def test_P_and_p_thread_suffix_work_llgs(self):
         self.init_llgs_test()
-        self.buildDwarf()
+        self.build()
         self.set_inferior_startup_launch()
         self.P_and_p_thread_suffix_work()
-
-
-if __name__ == '__main__':
-    unittest2.main()
